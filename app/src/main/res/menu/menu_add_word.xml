@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="Save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:id="@+id/action_save"
+        app:showAsAction="always"/>
+    <item
+        android:title="Highlight"
+        android:icon="@android:drawable/btn_star_big_off"
+        android:id="@+id/action_highlight"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:title="Cancel"
+        android:id="@+id/action_cancel"/>
+</menu>

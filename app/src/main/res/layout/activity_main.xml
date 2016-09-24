@@ -4,16 +4,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.techpalle.karan.personaldictionary.MainActivity">
+    tools:context=".ui.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        style="@style/Toolbar"
+    <include
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"/>
+        layout="@layout/toolbar"/>
 
     <android.support.design.widget.TabLayout
-        style="@style/Toolbar"
+        android:background="@color/colorPrimary"
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"/>

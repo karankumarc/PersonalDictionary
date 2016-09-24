@@ -1,4 +1,4 @@
-package com.techpalle.karan.personaldictionary;
+package com.techpalle.karan.personaldictionary.ui;
 
 
 import android.os.Bundle;
@@ -7,14 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.techpalle.karan.personaldictionary.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyWordsFragment extends Fragment {
+public class QuizFragment extends Fragment {
 
 
-    public MyWordsFragment() {
+    public QuizFragment() {
         // Required empty public constructor
     }
 
@@ -23,7 +25,7 @@ public class MyWordsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_words, container, false);
+        return inflater.inflate(R.layout.fragment_quiz, container, false);
     }
 
 }

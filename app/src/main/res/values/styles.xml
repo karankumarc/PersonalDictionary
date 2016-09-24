@@ -8,8 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="Toolbar" parent="AppTheme">
-        <item name="android:background">@color/colorPrimary</item>
-    </style>
+
 
 </resources>
