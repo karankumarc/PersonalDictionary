@@ -3,7 +3,7 @@
     android:background="@android:color/holo_red_dark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.techpalle.karan.personaldictionary.CrowdWordsFragment">
+    tools:context=".ui.CrowdWordsFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

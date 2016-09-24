@@ -1,14 +1,30 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/darker_gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.techpalle.karan.personaldictionary.MyWordsFragment">
+    tools:context=".ui.MyWordsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_my_words"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="My Words" />
+        android:layout_height="match_parent"/>
 
-</FrameLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        app:layout_anchor="@id/recycler_view_my_words"
+        app:layout_anchorGravity="bottom|right|end"
+        app:layout_behavior="com.techpalle.karan.personaldictionary.ui.ScrollAwareFABBehavior"
+        android:id="@+id/fab_add_word"
+        android:src="@drawable/ic_add_white_36dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        app:fabSize="normal" />
+    <!-- FAB Customization
+    app:backgroundTint=""
+    app:borderWidth=""
+    app:rippleColor=""-->
+
+</android.support.design.widget.CoordinatorLayout>

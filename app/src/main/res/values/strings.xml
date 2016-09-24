@@ -1,6 +1,29 @@
 <resources>
-    <string name="app_name">PersonalDictionary</string>
+    <string name="app_name">Personal Dictionary</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="error_message_empty_meaning">This field cannot be empty</string>
+    <string name="error_message_empty_word">This field cannot be empty</string>
+    <string name="error_message_empty_source">This field cannot be empty</string>
+    <string name="error_message_word_exists">This word already exists in your dictionary</string>
+    <string name="error_message_source_exists">This source already exists</string>
+    <string name="speech_prompt_word">Speak out the word...</string>
+    <string name="speech_prompt_meaning">Speak out the meaning...</string>
+    <string name="speech_prompt_usage">Speak out the usage...</string>
+    <string name="error_speech_not_supported">Speech not supported on this device</string>
+    <string name="snack_no_new_words_added">No new words have been added</string>
+    <string name="TAG_MY_WORDS_FRAGMENT">TagMyWordsFragment</string>
+
+    <string-array name="parts_of_speech">
+        <item>Noun</item>
+        <item>Pronoun</item>
+        <item>Adjective</item>
+        <item>Verb</item>
+        <item>Adverb</item>
+        <item>Conjunction</item>
+        <item>Preposition</item>
+        <item>Interjection</item>
+        <item>Determiner</item>
+    </string-array>
 </resources>
