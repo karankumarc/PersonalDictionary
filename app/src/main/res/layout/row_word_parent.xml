@@ -16,6 +16,7 @@
             android:src="@android:drawable/star_off"
             android:layout_centerVertical="true"
             android:layout_margin="10dp"
+
             android:layout_alignParentLeft="true"
             android:id="@+id/image_highlight"
             android:layout_width="40dp"

@@ -2,16 +2,11 @@ package com.techpalle.karan.personaldictionary.ui;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.Cursor;
+import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.NavUtils;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,16 +19,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.techpalle.karan.personaldictionary.R;
 import com.techpalle.karan.personaldictionary.data.MyDatabase;
-import com.techpalle.karan.personaldictionary.data.PersonalDictionaryContract;
 import com.techpalle.karan.personaldictionary.model.Source;
 import com.techpalle.karan.personaldictionary.utils.Constants;
 import com.techpalle.karan.personaldictionary.utils.Utils;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -184,6 +176,7 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
                 if (mIsHighlighted) {
                     mIsHighlighted = false;
                     item.setIcon(android.R.drawable.btn_star_big_off);
+
                 } else {
                     mIsHighlighted = true;
                     item.setIcon(android.R.drawable.btn_star_big_on);

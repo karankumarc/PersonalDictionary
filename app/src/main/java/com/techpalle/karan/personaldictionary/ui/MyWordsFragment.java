@@ -50,6 +50,11 @@ public class MyWordsFragment extends Fragment {
     private WordMeaningExpandableRecyclerAdapter adapter;
     private List<Word> parentWordListItems;
 
+
+    //modified code
+    private ImageView star;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,6 +65,15 @@ public class MyWordsFragment extends Fragment {
 
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab_add_word);
 
+        //This is modified code gyanesh
+       /* star=(ImageView)view.findViewById(R.id.image_highlight) ;
+        star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"Start is clicked",Toast.LENGTH_LONG).show();
+            }
+        });
+*/
 
         //wordsAdapter = new MyWordsAdapter();
         //wordArrayList.addAll(myDatabase.getAllWords());
@@ -131,6 +145,8 @@ public class MyWordsFragment extends Fragment {
         }
     }
 
+
+
     private void refreshWords(String newWord) {
         //wordArrayList.clear();
         //wordArrayList.addAll(myDatabase.getAllWords());
@@ -191,4 +207,9 @@ public class MyWordsFragment extends Fragment {
             return view;
         }
     }
+
+
+
+
+
 }

@@ -89,7 +89,25 @@ public class MyDatabase {
     }
      */
 
-    public ArrayList<Source> getAllSources(){
+    public long updateHighlightedValue(String word, boolean isHighlighted) {
+        database = openReadableDatabaseInstance();
+        //Cursor cursor = database.query(MySourcesEntry.TABLE_NAME, null, null, null, null, null, null);
+        ContentValues contentValues = new ContentValues();
+        if (isHighlighted)
+            contentValues.put(MyWordsEntry.COLUMN_HIGHLIGHT, 1);
+        else
+            contentValues.put(MyWordsEntry.COLUMN_HIGHLIGHT, 0);
+
+        String whereClause = MyWordsEntry.COLUMN_WORD + " = ?";
+        String[] whereArgs = {word};
+        long result = database.update(MyWordsEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
+
+        closeDatabaseConnection();
+
+        return result;
+    }
+
+    public ArrayList<Source> getAllSources() {
 
         database = openReadableDatabaseInstance();
 
@@ -101,7 +119,7 @@ public class MyDatabase {
 
         ArrayList<Source> sourceArrayList = new ArrayList<>();
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
                 Source source = new Source(cursor.getInt(cursor.getColumnIndex(MySourcesEntry._ID)),
                         cursor.getString(cursor.getColumnIndex(MySourcesEntry.COLUMN_SOURCE_NAME)));
@@ -116,35 +134,7 @@ public class MyDatabase {
     }
 
 
-    public int getPositionOfWordAfterArrangingAlphabetically(String word){
-
-            database = openReadableDatabaseInstance();
-
-            String[] projections = {MyWordsEntry._ID, MyWordsEntry.COLUMN_WORD, MyWordsEntry.COLUMN_MEANING,
-                    MyWordsEntry.COLUMN_SCORE, MyWordsEntry.COLUMN_HIGHLIGHT};
-            String orderBy = MyWordsEntry.COLUMN_WORD + " ASC ";
-
-            Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, null, null, null, null, orderBy);
-            ArrayList<Word> wordArrayList = new ArrayList<>();
-
-
-            int count = 0;
-            int finalPosition = -1;
-            if(cursor.moveToFirst()){
-                do {
-                    count++;
-                    if(cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD)).equals(word)){
-                        finalPosition = count;
-                    }
-                } while (cursor.moveToNext());
-            }
-
-            closeDatabaseConnection();
-
-            return finalPosition;
-    }
-
-    public ArrayList<Word> getAllWords(){
+    public int getPositionOfWordAfterArrangingAlphabetically(String word) {
 
         database = openReadableDatabaseInstance();
 
@@ -155,7 +145,46 @@ public class MyDatabase {
         Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, null, null, null, null, orderBy);
         ArrayList<Word> wordArrayList = new ArrayList<>();
 
-        if(cursor.moveToFirst()){
+
+        int count = 0;
+        int finalPosition = -1;
+        if (cursor.moveToFirst()) {
+            do {
+                count++;
+                if (cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD)).equals(word)) {
+                    finalPosition = count;
+                }
+            } while (cursor.moveToNext());
+        }
+
+        closeDatabaseConnection();
+
+        return finalPosition;
+    }
+
+    public void updateStar(Boolean state) {
+
+        database = openReadableDatabaseInstance();
+        if (state) {
+
+        }
+
+
+    }
+
+
+    public ArrayList<Word> getAllWords() {
+
+        database = openReadableDatabaseInstance();
+
+        String[] projections = {MyWordsEntry._ID, MyWordsEntry.COLUMN_WORD, MyWordsEntry.COLUMN_MEANING,
+                MyWordsEntry.COLUMN_SCORE, MyWordsEntry.COLUMN_HIGHLIGHT};
+        String orderBy = MyWordsEntry.COLUMN_WORD + " ASC ";
+
+        Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, null, null, null, null, orderBy);
+        ArrayList<Word> wordArrayList = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
             do {
                 Word word = new Word(cursor.getInt(cursor.getColumnIndex(MyWordsEntry._ID)),
                         cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD)),
@@ -172,11 +201,11 @@ public class MyDatabase {
 
     }
 
-    public boolean checkIfSourceExists(String source){
+    public boolean checkIfSourceExists(String source) {
 
         database = openReadableDatabaseInstance();
 
-        String sql = "SELECT * FROM "+MySourcesEntry.TABLE_NAME+" WHERE "+MySourcesEntry.COLUMN_SOURCE_NAME +" = '" + source + "';";
+        String sql = "SELECT * FROM " + MySourcesEntry.TABLE_NAME + " WHERE " + MySourcesEntry.COLUMN_SOURCE_NAME + " = '" + source + "';";
         Cursor data = database.rawQuery(sql, null);
 
         boolean sourceExists = false;
@@ -206,7 +235,7 @@ public class MyDatabase {
 
     }
 
-    public boolean checkIfWordExists(String word){
+    public boolean checkIfWordExists(String word) {
 
         database = openReadableDatabaseInstance();
 
@@ -216,11 +245,11 @@ public class MyDatabase {
 
         String[] selectionArgs = {word};
 
-        Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, selection, selectionArgs, null, null, null );
+        Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, selection, selectionArgs, null, null, null);
 
         boolean wordExists = false;
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             wordExists = true;
         } else {
             wordExists = false;
@@ -243,7 +272,7 @@ public class MyDatabase {
         contentValues.put(MyWordsEntry.COLUMN_SOURCE, source);
         contentValues.put(MyWordsEntry.COLUMN_SCORE, 0);
 
-        if(isHighlighted)
+        if (isHighlighted)
             contentValues.put(MyWordsEntry.COLUMN_HIGHLIGHT, 1);
         else
             contentValues.put(MyWordsEntry.COLUMN_HIGHLIGHT, 0);
@@ -270,12 +299,12 @@ public class MyDatabase {
 
         Word word = null;
 
-        if(cursor.moveToFirst()){
-                word = new Word(cursor.getInt(cursor.getColumnIndex(MyWordsEntry._ID)),
-                        cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD)),
-                        cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_MEANING)),
-                        cursor.getInt(cursor.getColumnIndex(MyWordsEntry.COLUMN_SCORE)),
-                        cursor.getInt(cursor.getColumnIndex(MyWordsEntry.COLUMN_HIGHLIGHT)));
+        if (cursor.moveToFirst()) {
+            word = new Word(cursor.getInt(cursor.getColumnIndex(MyWordsEntry._ID)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_MEANING)),
+                    cursor.getInt(cursor.getColumnIndex(MyWordsEntry.COLUMN_SCORE)),
+                    cursor.getInt(cursor.getColumnIndex(MyWordsEntry.COLUMN_HIGHLIGHT)));
 
         }
 

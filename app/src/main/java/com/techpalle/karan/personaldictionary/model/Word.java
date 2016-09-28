@@ -2,7 +2,6 @@ package com.techpalle.karan.personaldictionary.model;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +46,10 @@ public class Word implements ParentListItem{
 
     public boolean getIsHighlighted() {
         return isHighlighted;
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        isHighlighted = highlighted;
     }
 
     public int getScore() {
