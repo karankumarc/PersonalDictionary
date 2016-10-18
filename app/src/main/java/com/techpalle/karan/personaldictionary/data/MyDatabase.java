@@ -13,6 +13,8 @@ import com.techpalle.karan.personaldictionary.model.Source;
 import com.techpalle.karan.personaldictionary.model.Word;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class MyDatabase {
 
@@ -107,23 +109,24 @@ public class MyDatabase {
         return result;
     }
 
-    public ArrayList<Source> getAllSources() {
+    public ArrayList<String> getAllSources() {
 
         database = openReadableDatabaseInstance();
 
         String[] projections = {MySourcesEntry._ID, MySourcesEntry.COLUMN_SOURCE_NAME};
 
-        String orderBy = null; //MySourcesEntry.COLUMN_SOURCE_NAME+ " ASC";
+        String orderBy = MySourcesEntry.COLUMN_SOURCE_NAME+ " ASC";
 
         Cursor cursor = database.query(MySourcesEntry.TABLE_NAME, projections, null, null, null, null, orderBy);
 
-        ArrayList<Source> sourceArrayList = new ArrayList<>();
+        ArrayList<String> sourceArrayList = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
-                Source source = new Source(cursor.getInt(cursor.getColumnIndex(MySourcesEntry._ID)),
-                        cursor.getString(cursor.getColumnIndex(MySourcesEntry.COLUMN_SOURCE_NAME)));
-                sourceArrayList.add(source);
+                /*Source source = new Source(cursor.getInt(cursor.getColumnIndex(MySourcesEntry._ID)),
+                        cursor.getString(cursor.getColumnIndex(MySourcesEntry.COLUMN_SOURCE_NAME)));*/
+                sourceArrayList.add(cursor.getString(cursor.getColumnIndex(MySourcesEntry.COLUMN_SOURCE_NAME)));
+
             } while (cursor.moveToNext());
         }
 
@@ -160,16 +163,6 @@ public class MyDatabase {
         closeDatabaseConnection();
 
         return finalPosition;
-    }
-
-    public void updateStar(Boolean state) {
-
-        database = openReadableDatabaseInstance();
-        if (state) {
-
-        }
-
-
     }
 
 
@@ -286,6 +279,38 @@ public class MyDatabase {
 
     }
 
+    public Word getWordWithId(int id) {
+
+        database = openReadableDatabaseInstance();
+
+        String[] projections = {MyWordsEntry._ID, MyWordsEntry.COLUMN_WORD, MyWordsEntry.COLUMN_MEANING,
+                MyWordsEntry.COLUMN_SCORE, MyWordsEntry.COLUMN_HIGHLIGHT, MyWordsEntry.COLUMN_USAGE,
+                MyWordsEntry.COLUMN_WORD_FORM, MyWordsEntry.COLUMN_SOURCE};
+        String selection = MyWordsEntry._ID + " = ? ";
+        String[] selectionArgs = {""+id};
+
+        Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, selection, selectionArgs, null, null, null);
+
+        Word word = null;
+
+        if (cursor.moveToFirst()) {
+            word = new Word(cursor.getInt(cursor.getColumnIndex(MyWordsEntry._ID)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_MEANING)),
+                    cursor.getInt(cursor.getColumnIndex(MyWordsEntry.COLUMN_SCORE)),
+                    cursor.getInt(cursor.getColumnIndex(MyWordsEntry.COLUMN_HIGHLIGHT)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_USAGE)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_SOURCE)),
+                    cursor.getString(cursor.getColumnIndex(MyWordsEntry.COLUMN_WORD_FORM))
+                    );
+
+        }
+
+        closeDatabaseConnection();
+
+        return word;
+    }
+
     public Word getWord(String newWord) {
 
         database = openReadableDatabaseInstance();
@@ -311,6 +336,77 @@ public class MyDatabase {
         closeDatabaseConnection();
 
         return word;
+    }
+
+    public long updateWord(int id, String word, String meaning, String partOfSpeech, String usage, String source, boolean isHighlighted) {
+        database = openWritableDatabaseInstance();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MyWordsEntry.COLUMN_WORD, word);
+        contentValues.put(MyWordsEntry.COLUMN_MEANING, meaning);
+        contentValues.put(MyWordsEntry.COLUMN_WORD_FORM, partOfSpeech);
+        contentValues.put(MyWordsEntry.COLUMN_USAGE, usage);
+        contentValues.put(MyWordsEntry.COLUMN_SOURCE, source);
+        contentValues.put(MyWordsEntry.COLUMN_SCORE, 0);
+
+        if (isHighlighted)
+            contentValues.put(MyWordsEntry.COLUMN_HIGHLIGHT, 1);
+        else
+            contentValues.put(MyWordsEntry.COLUMN_HIGHLIGHT, 0);
+
+        String selection = MyWordsEntry._ID + " = ?";
+        String[] selectionArgs = {""+id};
+
+
+        long value = database.update(MyWordsEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+
+        closeDatabaseConnection();
+
+        return value;
+    }
+
+    public boolean checkIfEditedWordExists(String word, int id) {
+        database = openReadableDatabaseInstance();
+
+        String[] projections = {MyWordsEntry._ID};
+
+        String selection = MyWordsEntry.COLUMN_WORD + " = ? ";
+
+        String[] selectionArgs = {word};
+
+        Cursor cursor = database.query(MyWordsEntry.TABLE_NAME, projections, selection, selectionArgs, null, null, null);
+
+        boolean wordExists = false;
+
+        if (cursor.moveToFirst()) {
+            int returnedId = cursor.getInt(0);
+
+            if(returnedId == id){
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            wordExists = false;
+        }
+
+        closeDatabaseConnection();
+
+        return wordExists;
+    }
+
+    public int deleteWord(int id) {
+        database = openWritableDatabaseInstance();
+
+        String selection = MyWordsEntry._ID +" = ?";
+        String[] selectionArgs = {""+id};
+
+        int result = database.delete(MyWordsEntry.TABLE_NAME, selection, selectionArgs);
+
+        closeDatabaseConnection();
+
+        return result;
+
     }
 
     private class PersonalDictionaryDbHelper extends SQLiteOpenHelper {

@@ -14,7 +14,7 @@
         android:layout_height="50dp">
 
         <ImageView
-            android:src="@android:drawable/star_off"
+            android:src="@android:drawable/btn_star_big_off"
             android:layout_centerVertical="true"
             android:layout_margin="10dp"
             android:layout_alignParentLeft="true"

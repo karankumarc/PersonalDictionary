@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
@@ -20,7 +19,8 @@ import com.techpalle.karan.personaldictionary.R;
 import com.techpalle.karan.personaldictionary.data.MyDatabase;
 import com.techpalle.karan.personaldictionary.model.Meaning;
 import com.techpalle.karan.personaldictionary.model.Word;
-import com.techpalle.karan.personaldictionary.ui.InDetails;
+import com.techpalle.karan.personaldictionary.ui.mywords.WordDetailsActivity;
+import com.techpalle.karan.personaldictionary.utils.Constants;
 
 import java.util.List;
 
@@ -31,8 +31,6 @@ public class WordMeaningExpandableRecyclerAdapter extends
         ExpandableRecyclerAdapter<WordMeaningExpandableRecyclerAdapter.WordParentViewHolder, WordMeaningExpandableRecyclerAdapter.MeaningChildViewHolder> {
     private Context context;
     private LayoutInflater mInflater;
-    private List<Word> uwordList;
-    private String word;
     /**
      * Primary constructor. Sets up {@link #mParentItemList} and {@link #mItemList}.
      * <p/>
@@ -68,8 +66,6 @@ public class WordMeaningExpandableRecyclerAdapter extends
            }
        });*/
 
-
-
         return new WordParentViewHolder(view);
     }
 
@@ -95,6 +91,7 @@ public class WordMeaningExpandableRecyclerAdapter extends
     @Override
     public void onBindChildViewHolder(MeaningChildViewHolder childViewHolder, int position, Object childListItem) {
         Meaning meaning = (Meaning) childListItem;
+        childViewHolder.setData(meaning, position);
         childViewHolder.mMeaningTextView.setText(meaning.getMeaning());
         childViewHolder.mScoreTextView.setText(""+meaning.getScore());
     }
@@ -111,9 +108,6 @@ public class WordMeaningExpandableRecyclerAdapter extends
         public WordParentViewHolder(View itemView) {
             super(itemView);
 
-
-
-
             mParentWordTextView = (TextView) itemView.findViewById(R.id.text_view_row_word);
             mParentDropDownArrow = (ImageView) itemView.findViewById(R.id.image_drop_down_arrow);
             mParentHighlight = (ImageView) itemView.findViewById(R.id.image_highlight);
@@ -121,19 +115,9 @@ public class WordMeaningExpandableRecyclerAdapter extends
             //modified by gyanesh
            // word=mParentWordTextView.getText().toString();
 
-
-            mParentWordTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TextView textView = (TextView) v;
-                    Snackbar.make(v, textView.getText(), Snackbar.LENGTH_LONG).show();
-                }
-            });
-
             mParentDropDownArrow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    word=mParentWordTextView.getText().toString();
                     if (isExpanded()) {
                         collapseView();
                         mParentDropDownArrow.setImageResource(android.R.drawable.arrow_down_float);
@@ -149,9 +133,9 @@ public class WordMeaningExpandableRecyclerAdapter extends
                 public void onClick(View view) {
                     if(currentWord.getIsHighlighted()){
                         Log.v("get_highlighted","Turning off");
-                        mParentHighlight.setImageResource(android.R.drawable.star_off);
+                        mParentHighlight.setImageResource(android.R.drawable.btn_star_big_off);
                         currentWord.setHighlighted(false);
-                        updateHighlightedValue(currentWord.getName(), false);
+                        updateHighlightedValue(currentWord.getName(), false, view);
                     } else {
                         /**
                          * Highlight the word and save the value in the database
@@ -159,19 +143,23 @@ public class WordMeaningExpandableRecyclerAdapter extends
                         mParentHighlight.setImageResource(android.R.drawable.btn_star_big_on);
                         currentWord.setHighlighted(true);
 
-                        updateHighlightedValue(currentWord.getName(), true);
+                        updateHighlightedValue(currentWord.getName(), true, view);
                     }
                 }
             });
 
         }
 
-        public void updateHighlightedValue(String name, boolean newIsHighlightedValue){
+        public void updateHighlightedValue(String name, boolean newIsHighlightedValue, View view){
             myDatabase = new MyDatabase(context);
             long result = myDatabase.updateHighlightedValue(name, newIsHighlightedValue);
 
-            if(result == 1){
-                Toast.makeText(context, "Updated successfully", Toast.LENGTH_SHORT).show();
+            if(result > 0){
+                if(newIsHighlightedValue){
+                    Snackbar.make(view, name + " has been mastered!", Snackbar.LENGTH_LONG).show();
+                } else {
+                    Snackbar.make(view, name + " has been removed from the mastered word list!", Snackbar.LENGTH_LONG).show();
+                }
             }
         }
 
@@ -200,6 +188,7 @@ public class WordMeaningExpandableRecyclerAdapter extends
     public class MeaningChildViewHolder extends ChildViewHolder {
 
         public TextView mMeaningTextView, mScoreTextView, mViewDetailsTextView;
+        private Meaning currentMeaning;
 
 
         public MeaningChildViewHolder(View itemView) {
@@ -212,15 +201,19 @@ public class WordMeaningExpandableRecyclerAdapter extends
             mViewDetailsTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String meaning=mMeaningTextView.getText().toString();
-                    Intent i=new Intent(context, InDetails.class);
-                    i.putExtra("word",word);
-                    i.putExtra("meaning",meaning);
+                    Intent i=new Intent(context, WordDetailsActivity.class);
+                    i.putExtra(Constants.KEY_BUNDLE_WORD_ID,currentMeaning.getId());
                     context.startActivity(i);
                 }
             });
 
 
+        }
+
+        public void setData(Meaning meaning, int position) {
+            currentMeaning = meaning;
+            mMeaningTextView.setText(meaning.getMeaning());
+            mScoreTextView.setText(""+meaning.getScore());
         }
     }
 }

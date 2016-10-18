@@ -1,4 +1,4 @@
-package com.techpalle.karan.personaldictionary.ui;
+package com.techpalle.karan.personaldictionary.ui.mywords;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.techpalle.karan.personaldictionary.R;
 import com.techpalle.karan.personaldictionary.data.MyDatabase;
 import com.techpalle.karan.personaldictionary.model.Source;
+import com.techpalle.karan.personaldictionary.model.Word;
 import com.techpalle.karan.personaldictionary.utils.Constants;
 import com.techpalle.karan.personaldictionary.utils.Utils;
 
@@ -35,16 +36,19 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
     private static final int REQ_CODE_SPEECH_INPUT_MEANING = 2;
     private static final int REQ_CODE_SPEECH_INPUT_USAGE = 3;
 
-    private MyDatabase myDatabase;
-    private Spinner mSpinnerWordForm, mSpinnerSources;
+    private Word mWord;
 
-    private boolean mIsHighlighted = false;
-    private MySourceAdapter sourceAdapter;
+    private MyDatabase myDatabase;
+
+    private boolean mIsHighlighted = false, mIsEditWord = false;
+    private ArrayAdapter<String> sourceAdapter;
+
+    private Spinner mSpinnerWordForm, mSpinnerSources;
     private EditText mEditTextWord, mEditTextMeaning, mEditTextUsage;
     private TextInputLayout mTextInputLayoutWord, mTextInputLayoutMeaning;
     private ImageView imageViewSpeakName, imageViewSpeakMeaning, imageViewSpeakUsage;
 
-    ArrayList<Source> sourceArrayList = new ArrayList<>();
+    ArrayList<String> sourceArrayList = new ArrayList<>();
 
     String[] partsOfSpeechArray; //getResources().getStringArray(R.array.parts_of_speech);
 
@@ -56,7 +60,10 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
         partsOfSpeechArray = getResources().getStringArray(R.array.parts_of_speech);
 
         myDatabase = new MyDatabase(this);
-        sourceAdapter = new MySourceAdapter();
+
+        sourceArrayList.addAll(myDatabase.getAllSources());
+
+        sourceAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, sourceArrayList);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mSpinnerWordForm = (Spinner) findViewById(R.id.spinner_word_form);
@@ -94,16 +101,48 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setSubtitle("Add a new word...");
+        toolbar.setSubtitle("Add a new mWord...");
 
         ArrayAdapter<String> partsOfSpeechAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
                 partsOfSpeechArray);
         partsOfSpeechAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sourceArrayList.addAll(myDatabase.getAllSources());
+        //Source selectSource = new Source(-1, "Select source...");
+        sourceArrayList.add(0, "Select source...");
 
         mSpinnerWordForm.setAdapter(partsOfSpeechAdapter);
         mSpinnerSources.setAdapter(sourceAdapter);
 
+        mWord = null;
+        try {
+            mWord = (Word) getIntent().getExtras().getSerializable(Constants.KEY_BUNDLE_WORD_POJO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(mWord != null){
+            mIsEditWord = true;
+            mEditTextWord.setText(mWord.getName());
+            mEditTextMeaning.setText(mWord.getMeaning());
+            mEditTextUsage.setText(mWord.getUsage());
+            mSpinnerWordForm.setSelection(getIndex(mSpinnerWordForm, mWord.getWordForm()));
+            mSpinnerSources.setSelection(getIndex(mSpinnerSources, mWord.getSource()));
+        }
+
+    }
+
+    //private method of your class
+    private int getIndex(Spinner spinner, String myString)
+    {
+        int index = 0;
+
+        for (int i=0;i<spinner.getCount();i++){
+            String source = spinner.getItemAtPosition(i).toString();
+            if (source.equalsIgnoreCase(myString)){
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     @Override
@@ -111,6 +150,7 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
         try {
             switch (v.getId()) {
                 case R.id.speak_name:
@@ -176,14 +216,22 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
                 if (mIsHighlighted) {
                     mIsHighlighted = false;
                     item.setIcon(android.R.drawable.btn_star_big_off);
-
                 } else {
                     mIsHighlighted = true;
                     item.setIcon(android.R.drawable.btn_star_big_on);
                 }
                 break;
             case R.id.action_save:
-                validateWordAndSave();
+                if(mIsEditWord){
+                    validateEditedWordAndSave();
+                } else {
+                    validateWordAndSave();
+                }
+                break;
+            case R.id.action_cancel:
+                setResult(RESULT_CANCELED);
+                finish();
+                break;
         }
         return true;
     }
@@ -194,10 +242,45 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
         String meaning = mEditTextMeaning.getText().toString();
 
         if (validateWordAndMeaning(word, meaning)) {
+
             String partOfSpeech = partsOfSpeechArray[mSpinnerWordForm.getSelectedItemPosition()];
             String usage = mEditTextUsage.getText().toString();
-            String source = sourceArrayList.get(mSpinnerSources.getSelectedItemPosition()).getName();
-            long result = myDatabase.insertWord(word, meaning, partOfSpeech, usage, source, mIsHighlighted);
+            String sourceName;
+            if(mSpinnerSources.getSelectedItemPosition() == 0){
+                sourceName = null;
+            } else {
+                sourceName = sourceArrayList.get(mSpinnerSources.getSelectedItemPosition());
+            }
+            long result = myDatabase.insertWord(word, meaning, partOfSpeech, usage, sourceName, mIsHighlighted);
+
+            if (result != -1) {
+                //Snackbar.make(mEditTextMeaning, word + " has been added to your dictionary. ", Snackbar.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.putExtra(Constants.KEY_BUNDLE_NEW_WORD, word);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+
+    }
+
+    private void validateEditedWordAndSave() {
+
+        String word = Utils.formatWordFirstLetterCapital(mEditTextWord.getText().toString().trim());
+        String meaning = mEditTextMeaning.getText().toString();
+
+        if (validateEditedWordAndMeaning(word, meaning)) {
+            String partOfSpeech = partsOfSpeechArray[mSpinnerWordForm.getSelectedItemPosition()];
+            String usage = mEditTextUsage.getText().toString();
+
+            String sourceName;
+            if(mSpinnerSources.getSelectedItemPosition() == 0){
+                sourceName = null;
+            } else {
+                sourceName = sourceArrayList.get(mSpinnerSources.getSelectedItemPosition());
+            }
+
+            long result = myDatabase.updateWord(mWord.getId(), word, meaning, partOfSpeech, usage, sourceName, mIsHighlighted);
             if (result != -1) {
                 //Snackbar.make(mEditTextMeaning, word + " has been added to your dictionary. ", Snackbar.LENGTH_LONG).show();
                 Intent intent = new Intent();
@@ -213,6 +296,35 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
     public void onBackPressed() {
         setResult(RESULT_CANCELED);
         super.onBackPressed();
+    }
+
+    private boolean validateEditedWordAndMeaning(String word, String meaning) {
+
+        boolean wordValidation = false, meaningValidation = false;
+
+        if (word.length() < Constants.MINIMUM_WORD_LENGTH) {
+            mTextInputLayoutWord.setError(getString(R.string.error_message_empty_word));
+            wordValidation = false;
+        } else {
+            mTextInputLayoutWord.setErrorEnabled(false);
+            wordValidation = true;
+        }
+
+        if (meaning.length() < Constants.MINIMUM_MEANING_LENGTH) {
+            mTextInputLayoutMeaning.setError(getString(R.string.error_message_empty_meaning));
+            meaningValidation = false;
+        } else if (myDatabase.checkIfEditedWordExists(word, mWord.getId())) {
+            mTextInputLayoutWord.setError(getString(R.string.error_message_word_exists));
+            wordValidation = false;
+        } else {
+            mTextInputLayoutMeaning.setErrorEnabled(false);
+            meaningValidation = true;
+        }
+
+        if (wordValidation && meaningValidation)
+            return true;
+        else
+            return false;
     }
 
     private boolean validateWordAndMeaning(String word, String meaning) {
@@ -247,6 +359,17 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_word, menu);
+
+        if(mWord != null){
+            MenuItem item = menu.getItem(1);
+            if (mWord.getIsHighlighted()) {
+                mIsHighlighted = true;
+                item.setIcon(android.R.drawable.btn_star_big_on);
+            } else {
+                item.setIcon(android.R.drawable.btn_star_big_off);
+            }
+        }
+
         return true;
     }
 
@@ -272,7 +395,7 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
     }
 
 
-    private class MySourceAdapter extends BaseAdapter {
+    /*private class MySourceAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -303,7 +426,7 @@ public class AddWordActivity extends AppCompatActivity implements AddSourceFragm
 
             return view;
         }
-    }
+    }*/
 
 
 }

@@ -1,4 +1,4 @@
-package com.techpalle.karan.personaldictionary.ui;
+package com.techpalle.karan.personaldictionary.ui.mywords;
 
 
 import android.content.Intent;
@@ -23,6 +23,7 @@ import com.techpalle.karan.personaldictionary.adapter.WordMeaningExpandableRecyc
 import com.techpalle.karan.personaldictionary.data.MyDatabase;
 import com.techpalle.karan.personaldictionary.model.Meaning;
 import com.techpalle.karan.personaldictionary.model.Word;
+import com.techpalle.karan.personaldictionary.ui.mywords.AddWordActivity;
 import com.techpalle.karan.personaldictionary.utils.Constants;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class MyWordsFragment extends Fragment {
     private RecyclerAdapter recyclerAdapter;
     private WordMeaningExpandableRecyclerAdapter adapter;
     private List<Word> parentWordListItems;
+    private View mView;
 
 
     //modified code
@@ -59,17 +61,17 @@ public class MyWordsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_words, container, false);
+        mView = inflater.inflate(R.layout.fragment_my_words, container, false);
 
         myDatabase = new MyDatabase(getActivity());
 
-        floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab_add_word);
+        floatingActionButton = (FloatingActionButton) mView.findViewById(R.id.fab_add_word);
 
         //This is modified code gyanesh
-       /* star=(ImageView)view.findViewById(R.id.image_highlight) ;
+       /* star=(ImageView)mView.findViewById(R.id.image_highlight) ;
         star.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View mView) {
                 Toast.makeText(getActivity(),"Start is clicked",Toast.LENGTH_LONG).show();
             }
         });
@@ -78,13 +80,13 @@ public class MyWordsFragment extends Fragment {
         //wordsAdapter = new MyWordsAdapter();
         //wordArrayList.addAll(myDatabase.getAllWords());
 
-        setupRecyclerView(view);
+        setupRecyclerView();
 
         /*listViewMyWords.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View mView, int position, long id) {
                 Word word = wordArrayList.get(position);
-                Snackbar snackbar = Snackbar.make(view, word.getMeaning(), Snackbar.LENGTH_LONG);
+                Snackbar snackbar = Snackbar.make(mView, word.getMeaning(), Snackbar.LENGTH_LONG);
                 snackbar.setAction(""+word.getScore(), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -102,10 +104,10 @@ public class MyWordsFragment extends Fragment {
                 getActivity().startActivityForResult(intent, REQ_CODE_NEW_WORD);
             }
         });
-        return view;
+        return mView;
     }
 
-    private void setupRecyclerView(View view) {
+    private void setupRecyclerView() {
 
         List<Word> subcategoryWordListItems = myDatabase.getAllWords();
 
@@ -113,12 +115,12 @@ public class MyWordsFragment extends Fragment {
 
         for (Word word : subcategoryWordListItems) {
             List<Meaning> meaningsList = new ArrayList<>();
-            meaningsList.add(new Meaning(word.getMeaning(), word.getScore()));
+            meaningsList.add(new Meaning(word.getId(), word.getMeaning(), word.getScore()));
             word.setChildItemList(meaningsList);
             parentWordListItems.add(word);
         }
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_my_words);
+        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view_my_words);
         //recyclerAdapter = new RecyclerAdapter(getActivity(), myDatabase.getAllWords());
         adapter = new WordMeaningExpandableRecyclerAdapter(getActivity(), parentWordListItems);
         recyclerView.setAdapter(adapter);
@@ -129,6 +131,12 @@ public class MyWordsFragment extends Fragment {
 
         // Items show default animation even if we do not set this
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupRecyclerView();
     }
 
     @Override
@@ -161,7 +169,7 @@ public class MyWordsFragment extends Fragment {
 
         //List<Word> parentWordListItems = new ArrayList<>();
         List<Meaning> meaningsList = new ArrayList<>();
-        meaningsList.add(new Meaning(word.getMeaning(), word.getScore()));
+        meaningsList.add(new Meaning(word.getId(), word.getMeaning(), word.getScore()));
         word.setChildItemList(meaningsList);
 
         parentWordListItems.add(position-1, word);

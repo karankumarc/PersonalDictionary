@@ -1,4 +1,4 @@
-package com.techpalle.karan.personaldictionary.ui;
+package com.techpalle.karan.personaldictionary.ui.mywords;
 
 import android.app.Dialog;
 import android.content.Context;

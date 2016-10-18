@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MyWordsFragment">
+    tools:context=".ui.mywords.MyWordsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_my_words"
@@ -14,7 +14,7 @@
     <android.support.design.widget.FloatingActionButton
         app:layout_anchor="@id/recycler_view_my_words"
         app:layout_anchorGravity="bottom|right|end"
-        app:layout_behavior="com.techpalle.karan.personaldictionary.ui.ScrollAwareFABBehavior"
+        app:layout_behavior="com.techpalle.karan.personaldictionary.ui.mywords.ScrollAwareFABBehavior"
         android:id="@+id/fab_add_word"
         android:src="@drawable/ic_add_white_36dp"
         android:layout_width="wrap_content"

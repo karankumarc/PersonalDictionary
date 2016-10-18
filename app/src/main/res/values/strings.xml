@@ -7,6 +7,7 @@
     <string name="error_message_empty_word">This field cannot be empty</string>
     <string name="error_message_empty_source">This field cannot be empty</string>
     <string name="error_message_word_exists">This word already exists in your dictionary</string>
+    <string name="error_message_edited_word_exists">This word already exists in your dictionary</string>
     <string name="error_message_source_exists">This source already exists</string>
     <string name="speech_prompt_word">Speak out the word...</string>
     <string name="speech_prompt_meaning">Speak out the meaning...</string>

@@ -1,4 +1,4 @@
-package com.techpalle.karan.personaldictionary.ui;
+package com.techpalle.karan.personaldictionary.ui.mywords;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

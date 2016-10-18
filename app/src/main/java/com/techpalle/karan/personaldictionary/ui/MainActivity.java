@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.techpalle.karan.personaldictionary.R;
+import com.techpalle.karan.personaldictionary.ui.mywords.MyWordsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,8 +66,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0: return new MyWordsFragment();
-                case 1: return new CrowdWordsFragment();
+                case 1: return new MyLanguagesFragment();
                 case 2: return new QuizFragment();
+                case 3: return new CrowdWordsFragment();
                 default: return new MyWordsFragment();
             }
         }
@@ -75,15 +77,16 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position){
                 case 0: return "My Words";
-                case 1: return "Crowd Words";
+                case 1: return "My Languages";
                 case 2: return "Quiz";
+                case 3: return "Crowd Words";
                 default: return "My Words";
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
 
